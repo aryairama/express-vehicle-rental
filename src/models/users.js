@@ -19,4 +19,27 @@ const updateUser = (data, id) => new Promise((resolve, reject) => {
   });
 });
 
-export default { checkExistUser, insertUser, updateUser };
+const readUser = (search, order, fieldOrder, start = '', limit = '') => new Promise((resolve, reject) => {
+  if (limit !== '' && start !== '') {
+    connection.query(
+      `SELECT * FROM users WHERE (name LIKE "%${search}%" OR email LIKE "%${search}%") ORDER BY ${fieldOrder} ${order} LIMIT ${start} , ${limit}`,
+      (error, result) => {
+        promiseResolveReject(resolve, reject, error, result);
+      },
+    );
+  } else {
+    connection.query(
+      `SELECT * FROM users WHERE (name LIKE "%${search}%" OR email LIKE "%${search}%") ORDER BY ${fieldOrder} ${order}`,
+      (error, result) => {
+        promiseResolveReject(resolve, reject, error, result);
+      },
+    );
+  }
+});
+
+export default {
+  checkExistUser,
+  insertUser,
+  updateUser,
+  readUser,
+};
