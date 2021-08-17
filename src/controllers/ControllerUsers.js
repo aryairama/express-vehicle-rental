@@ -1,0 +1,158 @@
+import bcrypt from 'bcrypt';
+import path from 'path';
+import fs from 'fs/promises';
+import checkFolder from 'fs';
+import Jwt from 'jsonwebtoken';
+import { v4 as uuidv4 } from 'uuid';
+import usersModel from '../models/users.js';
+import { redis } from '../configs/redis.js';
+import { genAccessToken, genRefreshToken } from '../helpers/jwt.js';
+import { response, responseError } from '../helpers/helpers.js';
+
+const register = async (req, res, next) => {
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const data = {
+      name: req.body.name,
+      email: req.body.email,
+      roles: 'user',
+      password: await bcrypt.hash(req.body.password, salt),
+    };
+    const addDataUser = await usersModel.insertUser(data);
+    if (addDataUser.affectedRows) {
+      delete data.password;
+      response(res, 'success', 200, 'successfully added user data', data);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+const login = async (req, res, next) => {
+  try {
+    const checkExistUser = await usersModel.checkExistUser(req.body.email, 'email');
+    if (checkExistUser.length > 0) {
+      const comparePassword = await bcrypt.compare(req.body.password, checkExistUser[0].password);
+      if (comparePassword) {
+        delete checkExistUser[0].password;
+        const accessToken = await genAccessToken({ ...checkExistUser[0] }, { expiresIn: 60 * 60 * 2 });
+        const refreshToken = await genRefreshToken({ ...checkExistUser[0] }, { expiresIn: 60 * 60 * 4 });
+        response(res, 'Success', 200, 'Login success', { ...checkExistUser[0], accessToken, refreshToken });
+      } else {
+        responseError(res, 'Authorized failed', 401, 'Wrong password', {
+          password: 'passwords dont match',
+        });
+      }
+    } else {
+      responseError(res, 'Authorized failed', 401, 'User not Found', {
+        email: 'email not found',
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+const logout = (req, res, next) => {
+  try {
+    // eslint-disable-next-line no-unused-vars
+    redis.del(`jwtRefToken-${req.userLogin.user_id}`, (error, result) => {
+      if (error) {
+        next(error);
+      } else {
+        response(res, 'Logout', 200, 'Logout success', []);
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const refreshToken = async (req, res, next) => {
+  try {
+    const refToken = req.body.refreshToken;
+    if (!refToken) {
+      return responseError(res, 'Authorized failed', 401, 'Server need refreshToken', []);
+    }
+    Jwt.verify(refToken, process.env.REFRESH_TOKEN_SECRET, (err, decode) => {
+      if (err) {
+        if (err.name === 'TokenExpiredError') {
+          responseError(res, 'Authorized failed', 401, 'token expired', []);
+        } else if (err.name === 'JsonWebTokenError') {
+          responseError(res, 'Authorized failed', 401, 'token invalid', []);
+        } else {
+          responseError(res, 'Authorized failed', 401, 'token not active', []);
+        }
+      }
+      // eslint-disable-next-line no-unused-vars
+      const cacheRefToken = redis.get(`jwtRefToken-${decode.user_id}`, async (error, cacheToken) => {
+        if (cacheToken === refToken) {
+          delete decode.iat;
+          delete decode.exp;
+          redis.del(`jwtRefToken-${decode.user_id}`);
+          const accessToken = await genAccessToken(decode, { expiresIn: 60 * 60 });
+          const newRefToken = await genRefreshToken(decode, { expiresIn: 60 * 60 * 2 });
+          response(res, 'Success', 200, 'AccessToken', { accessToken, refreshToken: newRefToken });
+        } else {
+          responseError(res, 'Authorized failed', 403, 'Wrong refreshToken', []);
+        }
+      });
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateUser = async (req, res, next) => {
+  try {
+    let data = {
+      name: req.body.name,
+      gender: req.body.gender,
+      phone_number: req.body.phone_number,
+      address: req.body.address,
+      date_of_birth: req.body.date_of_birth,
+    };
+    const checkExistUser = await usersModel.checkExistUser(req.params.id, 'user_id');
+    if (checkExistUser.length > 0) {
+      if (req.body.email) {
+        data = { ...data, email: req.body.email };
+      }
+      if (req.body.roles) {
+        if (checkExistUser[0].roles === 'user') {
+          data = { ...data, roles: req.body.roles };
+        }
+      }
+      if (req.body.account_status) {
+        data = { ...data, account_status: req.body.account_status };
+      }
+      if (!checkFolder.existsSync(path.join(path.dirname(''), '/public/img/profile_img'))) {
+        checkFolder.mkdirSync(path.join(path.dirname(''), '/public/img/profile_img'), { recursive: true });
+      }
+      if (req.files) {
+        if (checkExistUser[0].profile_img && checkExistUser[0].profile_img.length > 10) {
+          fs.unlink(path.join(path.dirname(''), `/${checkExistUser[0].profile_img}`));
+        }
+        const fileName = uuidv4() + path.extname(req.files.profile_img.name);
+        const savePath = path.join(path.dirname(''), '/public/img/profile_img', fileName);
+        data = { ...data, profile_img: `public/img/profile_img/${fileName}` };
+        await req.files.profile_img.mv(savePath);
+      }
+      const changeDataUser = await usersModel.updateUser(data, req.params.id);
+      if (changeDataUser.affectedRows) {
+        response(res, 'success', 200, 'successfully updated user data', data);
+      }
+    } else {
+      response(res, 'failed', 404, 'the data you want to update does not exist', []);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default {
+  register,
+  login,
+  logout,
+  refreshToken,
+  updateUser,
+};
