@@ -33,4 +33,6 @@ const promiseResolveReject = (resolve, reject, error, result) => {
   }
 };
 
-export { response, responseError, promiseResolveReject, responsePagination, sendVerifEmailRegister };
+export {
+  response, responseError, promiseResolveReject, responsePagination,
+};
