@@ -141,4 +141,29 @@ const updateVehicle = async (req, res, next) => {
   }
 };
 
-export default { createVehicle, updateVehicle };
+const deleteVehicle = async (req, res, next) => {
+  try {
+    const checkExistVehicle = await vehiclesModel.checkExistVehicle(req.params.id, 'vehicle_id');
+    const checkRealtion = await vehiclesModel.checkRelationVehicleRental(req.params.id);
+    if (checkExistVehicle.length > 0) {
+      if (checkRealtion.length === 0) {
+        const dataImgVehicles = await vehicleImagesModel.getAllImgVehicles(req.params.id);
+        const removeDataVehicle = await vehiclesModel.deleteVehicle(req.params.id);
+        if (removeDataVehicle.affectedRows) {
+          dataImgVehicles.forEach((img) => {
+            fs.unlink(path.join(path.dirname(''), `/${img.vehicle_image}`));
+          });
+          response(res, 'success', 200, 'successfully deleted product data', []);
+        }
+      } else if (checkRealtion.length > 0) {
+        response(res, 'data relation', 409, 'product data cannot be deleted because it is related to other data', []);
+      }
+    } else {
+      response(res, 'failed', 404, 'the data you want to delete does not exist', []);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default { createVehicle, updateVehicle, deleteVehicle };

@@ -19,4 +19,27 @@ const updateVehicle = (data, id) => new Promise((resolve, reject) => {
   });
 });
 
-export default { insertVehicle, checkExistVehicle, updateVehicle };
+const checkRelationVehicleRental = (id) => new Promise((resolve, reject) => {
+  connection.query(
+    `SELECT vehicles.*, rental.* FROM vehicles INNER JOIN rental ON vehicles.vehicle_id = rental.vehicle_id
+    WHERE vehicles.vehicle_id = ?`,
+    id,
+    (error, result) => {
+      promiseResolveReject(resolve, reject, error, result);
+    },
+  );
+});
+
+const deleteVehicle = (id) => new Promise((resolve, reject) => {
+  connection.query('DELETE FROM vehicles where vehicle_id = ?', id, (error, result) => {
+    promiseResolveReject(resolve, reject, error, result);
+  });
+});
+
+export default {
+  insertVehicle,
+  checkExistVehicle,
+  updateVehicle,
+  checkRelationVehicleRental,
+  deleteVehicle,
+};

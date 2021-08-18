@@ -7,5 +7,6 @@ const router = express.Router();
 
 router
   .post('/', Auth, Role('admin'), ValidationVehicles('create'), ControllerVehicles.createVehicle)
-  .put('/:id', Auth, Role('admin'), ValidationVehicles('update'), ControllerVehicles.updateVehicle);
+  .put('/:id', Auth, Role('admin'), ValidationVehicles('update'), ControllerVehicles.updateVehicle)
+  .delete('/:id', Auth, Role('admin'), ValidationVehicles('delete'), ControllerVehicles.deleteVehicle);
 export default router;

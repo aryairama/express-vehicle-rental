@@ -186,6 +186,9 @@ const validate = (method) => {
       validateResult,
     ];
   }
+  if (method === 'delete') {
+    return [rulesUpdateAndDelete(), validateResult];
+  }
 };
 
 export default validate;
