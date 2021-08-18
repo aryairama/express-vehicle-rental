@@ -37,9 +37,28 @@ const readLocation = (search, order, fieldOrder, start = '', limit = '') => new 
   }
 });
 
+const checkRelationLocationVehicle = (id) => new Promise((resolve, reject) => {
+  connection.query(
+    `SELECT vehicles.*, locations.* FROM locations INNER JOIN vehicles on locations.location_id = vehicles.location_id
+    WHERE locations.location_id = ?`,
+    id,
+    (error, result) => {
+      promiseResolveReject(resolve, reject, error, result);
+    },
+  );
+});
+
+const deleteLocation = (id) => new Promise((resolve, reject) => {
+  connection.query('DELETE FROM locations where location_id = ?', id, (error, result) => {
+    promiseResolveReject(resolve, reject, error, result);
+  });
+});
+
 export default {
   checkExistLocation,
   insertLocation,
   updateLocation,
   readLocation,
+  checkRelationLocationVehicle,
+  deleteLocation,
 };

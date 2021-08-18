@@ -37,9 +37,28 @@ const readType = (search, order, fieldOrder, start = '', limit = '') => new Prom
   }
 });
 
+const checkRelationTypeVehicle = (id) => new Promise((resolve, reject) => {
+  connection.query(
+    `SELECT vehicles.*, types.* FROM types INNER JOIN vehicles on types.type_id = vehicles.type_id
+    WHERE types.type_id = ?`,
+    id,
+    (error, result) => {
+      promiseResolveReject(resolve, reject, error, result);
+    },
+  );
+});
+
+const deleteType = (id) => new Promise((resolve, reject) => {
+  connection.query('DELETE FROM types where type_id = ?', id, (error, result) => {
+    promiseResolveReject(resolve, reject, error, result);
+  });
+});
+
 export default {
   checkExistType,
   insertType,
   updateType,
   readType,
+  checkRelationTypeVehicle,
+  deleteType,
 };

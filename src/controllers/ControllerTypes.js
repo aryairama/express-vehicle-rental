@@ -95,4 +95,30 @@ const readType = async (req, res, next) => {
   }
 };
 
-export default { createType, updateType, readType };
+const deleteType = async (req, res, next) => {
+  try {
+    const checkExistType = await typesModel.checkExistType(req.params.id, 'type_id');
+    const checkRelationTypeVehicle = await typesModel.checkRelationTypeVehicle(req.params.id);
+    if (checkExistType.length > 0) {
+      if (checkRelationTypeVehicle.length === 0) {
+        const removeDataType = await typesModel.deleteType(req.params.id);
+        if (removeDataType.affectedRows) {
+          response(res, 'success', 200, 'successfully deleted type data', []);
+        }
+      } else if (checkRelationTypeVehicle.length > 0) {
+        response(res, 'data relation', 409, 'product data cannot be deleted because it is related to other data', []);
+      }
+    } else {
+      response(res, 'failed', 404, 'the data you want to delete does not exist', []);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default {
+  createType,
+  updateType,
+  readType,
+  deleteType,
+};

@@ -95,4 +95,30 @@ const readLocation = async (req, res, next) => {
   }
 };
 
-export default { createLocation, updateLocation, readLocation };
+const deleteLocation = async (req, res, next) => {
+  try {
+    const checkExistLocation = await locationsModel.checkExistLocation(req.params.id, 'location_id');
+    const checkRelationLocationVehicle = await locationsModel.checkRelationLocationVehicle(req.params.id);
+    if (checkExistLocation.length > 0) {
+      if (checkRelationLocationVehicle.length === 0) {
+        const removeDataLocation = await locationsModel.deleteLocation(req.params.id);
+        if (removeDataLocation.affectedRows) {
+          response(res, 'success', 200, 'successfully deleted location data', []);
+        }
+      } else if (checkRelationLocationVehicle.length > 0) {
+        response(res, 'data relation', 409, 'product data cannot be deleted because it is related to other data', []);
+      }
+    } else {
+      response(res, 'failed', 404, 'the data you want to delete does not exist', []);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default {
+  createLocation,
+  updateLocation,
+  readLocation,
+  deleteLocation,
+};

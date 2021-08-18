@@ -72,6 +72,9 @@ const validate = (method) => {
   if (method === 'read') {
     return [rulesRead(), validateResult];
   }
+  if (method === 'delete') {
+    return [rulesReadUpdateDelete(), validateResult];
+  }
 };
 
 export default validate;
