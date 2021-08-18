@@ -6,6 +6,7 @@ import cors from 'cors';
 import fileUpload from 'express-fileupload';
 import usersRouter from './src/routes/users.js';
 import locationsRouter from './src/routes/location.js';
+import typesRouter from './src/routes/types.js';
 import { responseError } from './src/helpers/helpers.js';
 
 const app = express();
@@ -16,6 +17,7 @@ app.use(cors());
 app.use(express.json());
 app.use('/users', usersRouter);
 app.use('/locations', locationsRouter);
+app.use('/types', typesRouter);
 app.use('*', (req, res, next) => {
   next(new Error('Endpoint Not Found'));
 });
