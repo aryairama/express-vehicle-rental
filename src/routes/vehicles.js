@@ -10,5 +10,6 @@ router
   .post('/', Auth, Role('admin'), ValidationVehicles('create'), ControllerVehicles.createVehicle)
   .get('/:id', ValidationVehicles('detail'), ControllerVehicles.detailVehicle)
   .put('/:id', Auth, Role('admin'), ValidationVehicles('update'), ControllerVehicles.updateVehicle)
-  .delete('/:id', Auth, Role('admin'), ValidationVehicles('delete'), ControllerVehicles.deleteVehicle);
+  .delete('/:id', Auth, Role('admin'), ValidationVehicles('delete'), ControllerVehicles.deleteVehicle)
+  .get('/type/:id', ValidationVehicles('read'), ControllerVehicles.readVehicleByType);
 export default router;
