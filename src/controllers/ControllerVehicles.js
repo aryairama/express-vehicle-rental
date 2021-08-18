@@ -5,7 +5,9 @@ import locationsModel from '../models/locations.js';
 import typesModel from '../models/types.js';
 import vehiclesModel from '../models/vehicles.js';
 import vehicleImagesModel from '../models/vehicle_images.js';
-import { responseError, response, createFolderImg } from '../helpers/helpers.js';
+import {
+  responseError, response, createFolderImg, responsePagination,
+} from '../helpers/helpers.js';
 
 const createVehicle = async (req, res, next) => {
   try {
@@ -166,4 +168,74 @@ const deleteVehicle = async (req, res, next) => {
   }
 };
 
-export default { createVehicle, updateVehicle, deleteVehicle };
+const readVehicle = async (req, res, next) => {
+  const locationName = req.query.location_name || '';
+  const typeName = req.query.type_name || '';
+  const search = req.query.search || '';
+  let order = req.query.order || '';
+  if (order.toUpperCase() === 'ASC') {
+    order = 'ASC';
+  } else if (order.toUpperCase() === 'DESC') {
+    order = 'DESC';
+  } else {
+    order = 'DESC';
+  }
+  let { fieldOrder } = req.query;
+  if (fieldOrder) {
+    if (fieldOrder.toLowerCase() === 'vehicles_name') {
+      fieldOrder = 'vehicles_name';
+    } else {
+      fieldOrder = 'vehicle_id';
+    }
+  } else {
+    fieldOrder = 'vehicle_id';
+  }
+  try {
+    let dataUsers;
+    let pagination;
+    const lengthRecord = Object.keys(
+      await vehiclesModel.readVehicle(search, order, fieldOrder, '', '', locationName, typeName),
+    ).length;
+    if (lengthRecord > 0) {
+      const limit = req.query.limit || 5;
+      const pages = Math.ceil(lengthRecord / limit);
+      let page = req.query.page || 1;
+      let nextPage = parseInt(page, 10) + 1;
+      let prevPage = parseInt(page, 10) - 1;
+      if (nextPage > pages) {
+        nextPage = pages;
+      }
+      if (prevPage < 1) {
+        prevPage = 1;
+      }
+      if (page > pages) {
+        page = pages;
+      } else if (page < 1) {
+        page = 1;
+      }
+      const start = (page - 1) * limit;
+      pagination = {
+        countData: lengthRecord,
+        pages,
+        limit: parseInt(limit, 10),
+        curentPage: parseInt(page, 10),
+        nextPage,
+        prevPage,
+      };
+      dataUsers = await vehiclesModel.readVehicle(search, order, fieldOrder, start, limit, locationName, typeName);
+      responsePagination(res, 'success', 200, 'data types', dataUsers, pagination);
+    } else {
+      dataUsers = await vehiclesModel.readVehicle(search, order, fieldOrder, '', '', locationName, typeName);
+      response(res, 'success', 200, 'data types', dataUsers);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default {
+  createVehicle,
+  updateVehicle,
+  deleteVehicle,
+  readVehicle,
+};

@@ -6,6 +6,7 @@ import { Auth, Role } from '../middlewares/Auth.js';
 const router = express.Router();
 
 router
+  .get('/', ValidationVehicles('read'), ControllerVehicles.readVehicle)
   .post('/', Auth, Role('admin'), ValidationVehicles('create'), ControllerVehicles.createVehicle)
   .put('/:id', Auth, Role('admin'), ValidationVehicles('update'), ControllerVehicles.updateVehicle)
   .delete('/:id', Auth, Role('admin'), ValidationVehicles('delete'), ControllerVehicles.deleteVehicle);
