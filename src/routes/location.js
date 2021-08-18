@@ -7,7 +7,7 @@ const router = express.Router();
 
 router
   .post('/', Auth, Role('admin'), ValidationLocations('create'), ControllerLocations.createLocation)
-  .get('/', Auth, Role('admin'), ValidationLocations('read'), ControllerLocations.readLocation)
+  .get('/', ValidationLocations('read'), ControllerLocations.readLocation)
   .put('/:id', Auth, Role('admin'), ValidationLocations('update'), ControllerLocations.updateLocation)
   .delete('/:id', Auth, Role('admin'), ValidationLocations('delete'), ControllerLocations.deleteLocation);
 
