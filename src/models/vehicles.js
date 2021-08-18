@@ -62,6 +62,15 @@ const readVehicle = (search, order, fieldOrder, start = '', limit = '', location
   }
 });
 
+const detailVehicle = (id) => new Promise((resolve, reject) => {
+  connection.query(
+    `SELECT locations.*,types.*,vehicles.* FROM vehicles INNER JOIN locations ON locations.location_id = vehicles.location_id
+    INNER JOIN types ON types.type_id = vehicles.type_id WHERE vehicles.vehicle_id = ?`, id, (error, result) => {
+      promiseResolveReject(resolve, reject, error, result);
+    },
+  );
+});
+
 export default {
   insertVehicle,
   checkExistVehicle,
@@ -69,4 +78,5 @@ export default {
   checkRelationVehicleRental,
   deleteVehicle,
   readVehicle,
+  detailVehicle,
 };

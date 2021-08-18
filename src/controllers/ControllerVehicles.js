@@ -233,9 +233,29 @@ const readVehicle = async (req, res, next) => {
   }
 };
 
+const detailVehicle = async (req, res, next) => {
+  try {
+    const checkExistVehicle = await vehiclesModel.checkExistVehicle(req.params.id, 'vehicle_id');
+    const detail = await vehiclesModel.detailVehicle(req.params.id);
+    const getAllImgVehicles = await vehicleImagesModel.getAllImgVehicles(req.params.id);
+    if (checkExistVehicle.length > 0) {
+      const data = {
+        ...detail[0],
+        vehicle_images: getAllImgVehicles,
+      };
+      response(res, 'success', 200, 'detail vehicle', data);
+    } else {
+      responseError(res, 'failed', 404, 'data not found', []);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   createVehicle,
   updateVehicle,
   deleteVehicle,
   readVehicle,
+  detailVehicle,
 };
