@@ -1,3 +1,6 @@
+import path from 'path';
+import checkFolder from 'fs';
+
 const response = (res, status, statusCode, message, data) => {
   res.status(statusCode).json({
     status,
@@ -33,6 +36,12 @@ const promiseResolveReject = (resolve, reject, error, result) => {
   }
 };
 
+const createFolderImg = (direktori) => {
+  if (!checkFolder.existsSync(path.join(path.dirname(''), direktori))) {
+    checkFolder.mkdirSync(path.join(path.dirname(''), direktori), { recursive: true });
+  }
+};
+
 export {
-  response, responseError, promiseResolveReject, responsePagination,
+  response, responseError, promiseResolveReject, responsePagination, createFolderImg,
 };
