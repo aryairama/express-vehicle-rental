@@ -5,5 +5,7 @@ import { Auth, Role } from '../middlewares/Auth.js';
 
 const router = express.Router();
 
-router.post('/', Auth, Role('admin'), ValidationVehicles('create'), ControllerVehicles.createVehicle);
+router
+  .post('/', Auth, Role('admin'), ValidationVehicles('create'), ControllerVehicles.createVehicle)
+  .put('/:id', Auth, Role('admin'), ValidationVehicles('update'), ControllerVehicles.updateVehicle);
 export default router;

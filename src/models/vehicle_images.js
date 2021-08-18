@@ -11,4 +11,35 @@ const insertImgVehicles = (data) => new Promise((resolve, reject) => {
   );
 });
 
-export default { insertImgVehicles };
+const checkImgVehicles = (id, idProduct) => new Promise((resolve, reject) => {
+  connection.query(
+    `SELECT * FROM vehicle_images WHERE vehicle_id = ${idProduct} AND (image_id) IN (?)`,
+    [id],
+    (error, result) => {
+      promiseResolveReject(resolve, reject, error, result);
+    },
+  );
+});
+
+const getAllImgVehicles = (id) => new Promise((resolve, reject) => {
+  connection.query('SELECT * FROM vehicle_images WHERE vehicle_id = ?', id, (error, result) => {
+    promiseResolveReject(resolve, reject, error, result);
+  });
+});
+
+const deleteImgVehicles = (data, idProduct) => new Promise((resolve, reject) => {
+  connection.query(
+    `DELETE FROM vehicle_images WHERE vehicle_id = ${idProduct} AND (image_id) IN (?)`,
+    [data],
+    (error, result) => {
+      promiseResolveReject(resolve, reject, error, result);
+    },
+  );
+});
+
+export default {
+  insertImgVehicles,
+  checkImgVehicles,
+  getAllImgVehicles,
+  deleteImgVehicles,
+};

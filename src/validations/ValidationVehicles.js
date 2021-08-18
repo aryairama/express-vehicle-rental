@@ -1,4 +1,4 @@
-import { body, validationResult } from 'express-validator';
+import { body, param, validationResult } from 'express-validator';
 import { responseError } from '../helpers/helpers.js';
 
 const validateResult = (req, res, next) => {
@@ -122,9 +122,69 @@ const rulesCreateImgVehicle = () => [
     .custom(maxSizeImg),
 ];
 
+const rulesUpdateImgVehicle = () => [
+  body('vehicle_image').optional({ checkFalsy: true }).custom(mimetypeImg).bail()
+    .custom(maxSizeImg),
+];
+
+const isDuplicateArrayExist = (value) => {
+  const duplicate = new Set(value).size !== value.length;
+  if (duplicate) {
+    throw new Error('duplicate color id');
+  }
+  return true;
+};
+
+const rulesUpdateOldImgVehicle = () => [
+  body('old_vehicle_image')
+    .if((value) => Array.isArray(value))
+    .notEmpty()
+    .withMessage('old img vehicle is required')
+    .bail()
+    .isArray({ min: 1 })
+    .withMessage('old img vehicle must be array and more than 0')
+    .bail()
+    .custom(isDuplicateArrayExist),
+  body('old_vehicle_image')
+    .if((value) => !Array.isArray(value))
+    .optional({ nullable: true })
+    .isNumeric()
+    .withMessage('old_vehicle_image id must be number')
+    .bail()
+    .isInt({ min: 1 })
+    .withMessage('old_vehicle_image id must be more than 0')
+    .toArray(),
+  body('old_vehicle_image.*')
+    .isNumeric()
+    .withMessage('old_vehicle_image id must be number')
+    .bail()
+    .isInt({ min: 1 })
+    .withMessage('old_vehicle_image id must be more than 0')
+    .toInt(),
+];
+
+const rulesUpdateAndDelete = () => [
+  param('id')
+    .isNumeric()
+    .withMessage('id must be number')
+    .bail()
+    .isInt({ min: 1 })
+    .withMessage('id must be more than 0'),
+];
+
 const validate = (method) => {
   if (method === 'create') {
     return [rulesFileUploud, rulesCreateImgVehicle(), rulesCreateUpdate(), validateResult];
+  }
+  if (method === 'update') {
+    return [
+      rulesFileUploud,
+      rulesUpdateAndDelete(),
+      rulesUpdateImgVehicle(),
+      rulesCreateUpdate(),
+      rulesUpdateOldImgVehicle(),
+      validateResult,
+    ];
   }
 };
 
