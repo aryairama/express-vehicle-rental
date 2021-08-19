@@ -102,7 +102,7 @@ const updateVehicle = async (req, res, next) => {
         }
         createFolderImg('/public/img/vehicle_images');
         const vehicleImage = [];
-        if (Array.isArray(req.files.vehicle_image)) {
+        if (Array.isArray(req.body.vehicle_image) && req.body.vehicle_image) {
           const promiseImg = req.files.vehicle_image.map((img) => {
             const fileName = uuidv4() + path.extname(img.name);
             const savePath = path.join(path.dirname(''), '/public/img/vehicle_images', fileName);
@@ -113,7 +113,7 @@ const updateVehicle = async (req, res, next) => {
             return img.mv(savePath);
           });
           await Promise.all(promiseImg);
-        } else {
+        } else if (!Array.isArray(req.body.vehicle_image) && req.body.vehicle_image) {
           const fileName = uuidv4() + path.extname(req.files.vehicle_image.name);
           const savePath = path.join(path.dirname(''), '/public/img/vehicle_images', fileName);
           vehicleImage.push({
