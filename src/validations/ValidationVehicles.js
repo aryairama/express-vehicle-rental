@@ -53,8 +53,8 @@ const rulesCreateUpdate = () => [
     .notEmpty()
     .withMessage('status vehicle is required')
     .bail()
-    .isIn(['Avaiable', 'FullBooked'])
-    .withMessage('the value of the status vehicle must be Avaiable or FullBooked'),
+    .isIn(['Available', 'FullBooked'])
+    .withMessage('the value of the status vehicle must be Available or FullBooked'),
   body('stock')
     .notEmpty()
     .withMessage('stock is required')

@@ -116,9 +116,19 @@ const deleteType = async (req, res, next) => {
   }
 };
 
+const detailType = async (req, res, next) => {
+  try {
+    const type = await typesModel.checkExistType(req.params.id, 'type_id');
+    response(res, 'success', 200, 'Detail type vehicle', type[0]);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   createType,
   updateType,
   readType,
   deleteType,
+  detailType,
 };
