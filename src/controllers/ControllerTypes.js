@@ -35,6 +35,7 @@ const updateType = async (req, res, next) => {
 };
 
 const readType = async (req, res, next) => {
+  const StatusPagination = req.query.pagination || 'on';
   const search = req.query.search || '';
   let order = req.query.order || '';
   if (order.toUpperCase() === 'ASC') {
@@ -84,8 +85,12 @@ const readType = async (req, res, next) => {
         nextPage,
         prevPage,
       };
-      dataUsers = await typesModel.readType(search, order, fieldOrder, start, limit);
-      responsePagination(res, 'success', 200, 'data types', dataUsers, pagination);
+      if (StatusPagination === 'on') {
+        dataUsers = await typesModel.readType(search, order, fieldOrder, start, limit);
+        return responsePagination(res, 'success', 200, 'data types', dataUsers, pagination);
+      }
+      dataUsers = await typesModel.readType(search, order, fieldOrder);
+      response(res, 'success', 200, 'data types', dataUsers);
     } else {
       dataUsers = await typesModel.readType(search, order, fieldOrder);
       response(res, 'success', 200, 'data types', dataUsers);

@@ -35,6 +35,7 @@ const updateLocation = async (req, res, next) => {
 };
 
 const readLocation = async (req, res, next) => {
+  const StatusPagination = req.query.pagination || 'on';
   const search = req.query.search || '';
   let order = req.query.order || '';
   if (order.toUpperCase() === 'ASC') {
@@ -84,8 +85,12 @@ const readLocation = async (req, res, next) => {
         nextPage,
         prevPage,
       };
-      dataUsers = await locationsModel.readLocation(search, order, fieldOrder, start, limit);
-      responsePagination(res, 'success', 200, 'data locations', dataUsers, pagination);
+      if (StatusPagination === 'on') {
+        dataUsers = await locationsModel.readLocation(search, order, fieldOrder, start, limit);
+        return responsePagination(res, 'success', 200, 'data locations', dataUsers, pagination);
+      }
+      dataUsers = await locationsModel.readLocation(search, order, fieldOrder);
+      response(res, 'success', 200, 'data locations', dataUsers);
     } else {
       dataUsers = await locationsModel.readLocation(search, order, fieldOrder);
       response(res, 'success', 200, 'data locations', dataUsers);
