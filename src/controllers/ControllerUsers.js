@@ -34,12 +34,17 @@ const login = async (req, res, next) => {
   try {
     const checkExistUser = await usersModel.checkExistUser(req.body.email, 'email');
     if (checkExistUser.length > 0) {
+      if (checkExistUser[0].verif_email === 0) {
+        return responseError(res, 'Email not verified', 403, 'Email has not been verified', {});
+      } if (checkExistUser[0].account_status !== 'active') {
+        return responseError(res, 'Account not Found', 404, 'Your account not found in database', {});
+      }
       const comparePassword = await bcrypt.compare(req.body.password, checkExistUser[0].password);
       if (comparePassword) {
         delete checkExistUser[0].password;
         const accessToken = await genAccessToken({ ...checkExistUser[0] }, { expiresIn: 60 * 60 * 2 });
         const refreshToken = await genRefreshToken({ ...checkExistUser[0] }, { expiresIn: 60 * 60 * 4 });
-        responseCookie(res, 'Success', 200, 'Login success', {}, { ...checkExistUser[0], accessToken, refreshToken },
+        responseCookie(res, 'Success', 200, 'Login success', { ...checkExistUser[0] }, { accessToken, refreshToken },
           {
             httpOnly: true,
             secure: true,

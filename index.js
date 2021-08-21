@@ -19,7 +19,7 @@ app.use(
   cors({
     credentials: JSON.parse(process.env.CREDENTIALS),
     origin(origin, callback) {
-      if (process.env.CORS_ORIGIN.indexOf(origin) !== -1) {
+      if (process.env.CORS_ORIGIN.indexOf(origin) !== -1 || origin === undefined) {
         callback(null, true);
       } else {
         callback(new Error('Not allowed by CORS'));
