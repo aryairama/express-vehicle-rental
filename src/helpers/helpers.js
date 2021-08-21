@@ -36,6 +36,18 @@ const promiseResolveReject = (resolve, reject, error, result) => {
   }
 };
 
+const responseCookie = (res, status, statusCode, message, data, dataCookie, optionCookie) => {
+  res
+    .cookie('authVehicleRental', dataCookie, { ...optionCookie })
+    .status(statusCode)
+    .json({
+      status,
+      statusCode,
+      message,
+      data,
+    });
+};
+
 const createFolderImg = (direktori) => {
   if (!checkFolder.existsSync(path.join(path.dirname(''), direktori))) {
     checkFolder.mkdirSync(path.join(path.dirname(''), direktori), { recursive: true });
@@ -43,5 +55,5 @@ const createFolderImg = (direktori) => {
 };
 
 export {
-  response, responseError, promiseResolveReject, responsePagination, createFolderImg,
+  response, responseError, promiseResolveReject, responsePagination, createFolderImg, responseCookie,
 };

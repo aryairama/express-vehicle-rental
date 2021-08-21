@@ -4,6 +4,7 @@ import path from 'path';
 import 'dotenv/config';
 import cors from 'cors';
 import fileUpload from 'express-fileupload';
+import cookieParser from 'cookie-parser';
 import usersRouter from './src/routes/users.js';
 import locationsRouter from './src/routes/location.js';
 import typesRouter from './src/routes/types.js';
@@ -14,7 +15,19 @@ const app = express();
 const port = process.env.PORT_APPLICATION;
 app.use('/public', express.static(path.resolve('./public')));
 app.use(fileUpload());
-app.use(cors());
+app.use(
+  cors({
+    credentials: JSON.parse(process.env.CREDENTIALS),
+    origin(origin, callback) {
+      if (process.env.CORS_ORIGIN.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+  }),
+);
+app.use(cookieParser());
 app.use(express.json());
 app.use('/users', usersRouter);
 app.use('/locations', locationsRouter);

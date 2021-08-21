@@ -7,7 +7,9 @@ import { v4 as uuidv4 } from 'uuid';
 import usersModel from '../models/users.js';
 import { redis } from '../configs/redis.js';
 import { genAccessToken, genRefreshToken } from '../helpers/jwt.js';
-import { response, responseError, responsePagination } from '../helpers/helpers.js';
+import {
+  response, responseError, responsePagination, responseCookie,
+} from '../helpers/helpers.js';
 
 const register = async (req, res, next) => {
   try {
@@ -37,7 +39,11 @@ const login = async (req, res, next) => {
         delete checkExistUser[0].password;
         const accessToken = await genAccessToken({ ...checkExistUser[0] }, { expiresIn: 60 * 60 * 2 });
         const refreshToken = await genRefreshToken({ ...checkExistUser[0] }, { expiresIn: 60 * 60 * 4 });
-        response(res, 'Success', 200, 'Login success', { ...checkExistUser[0], accessToken, refreshToken });
+        responseCookie(res, 'Success', 200, 'Login success', {}, { ...checkExistUser[0], accessToken, refreshToken },
+          {
+            httpOnly: true,
+            secure: true,
+          });
       } else {
         responseError(res, 'Authorized failed', 401, 'Wrong password', {
           password: 'passwords dont match',
