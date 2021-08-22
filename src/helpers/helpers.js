@@ -38,7 +38,7 @@ const promiseResolveReject = (resolve, reject, error, result) => {
 
 const responseCookie = (res, status, statusCode, message, data, dataCookie, optionCookie) => {
   res
-    .cookie('authVehicleRental', JSON.stringify(dataCookie), { ...optionCookie })
+    .cookie('authVehicleRental', dataCookie, { ...optionCookie })
     .status(statusCode)
     .json({
       status,

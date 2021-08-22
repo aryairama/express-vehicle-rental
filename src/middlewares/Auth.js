@@ -3,12 +3,11 @@ import { responseError } from '../helpers/helpers.js';
 
 export const Auth = (req, res, next) => {
   try {
-    const accessToken = req.headers.authorization;
-    if (!accessToken) {
+    const token = req.cookies.authVehicleRental;
+    if (!token) {
       return responseError(res, 'Authorized failed', 401, 'Server need accessToken', []);
     }
-    const token = accessToken.split(' ')[1];
-    Jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decode) => {
+    Jwt.verify(token.accessToken, process.env.ACCESS_TOKEN_SECRET, (err, decode) => {
       if (err) {
         if (err.name === 'TokenExpiredError') {
           return responseError(res, 'Authorized failed', 401, 'token expired', []);

@@ -71,6 +71,7 @@ const logout = (req, res, next) => {
       if (error) {
         next(error);
       } else {
+        res.clearCookie('authVehicleRental');
         response(res, 'Logout', 200, 'Logout success', []);
       }
     });
