@@ -84,11 +84,11 @@ const logout = (req, res, next) => {
 
 const refreshToken = async (req, res, next) => {
   try {
-    const refToken = req.body.refreshToken;
-    if (!refToken) {
+    const token = req.cookies.authVehicleRental;
+    if (!token) {
       return responseError(res, 'Authorized failed', 401, 'Server need refreshToken', []);
     }
-    Jwt.verify(refToken, process.env.REFRESH_TOKEN_SECRET, (err, decode) => {
+    Jwt.verify(token.refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decode) => {
       if (err) {
         if (err.name === 'TokenExpiredError') {
           responseError(res, 'Authorized failed', 401, 'token expired', []);
@@ -100,13 +100,17 @@ const refreshToken = async (req, res, next) => {
       }
       // eslint-disable-next-line no-unused-vars
       const cacheRefToken = redis.get(`jwtRefToken-${decode.user_id}`, async (error, cacheToken) => {
-        if (cacheToken === refToken) {
+        if (cacheToken === token.refreshToken) {
           delete decode.iat;
           delete decode.exp;
           redis.del(`jwtRefToken-${decode.user_id}`);
-          const accessToken = await genAccessToken(decode, { expiresIn: 60 * 60 });
-          const newRefToken = await genRefreshToken(decode, { expiresIn: 60 * 60 * 2 });
-          response(res, 'Success', 200, 'AccessToken', { accessToken, refreshToken: newRefToken });
+          const accessToken = await genAccessToken(decode, { expiresIn: 60 * 60 * 2 });
+          const newRefToken = await genRefreshToken(decode, { expiresIn: 60 * 60 * 4 });
+          responseCookie(res, 'Success', 200, 'AccessToken', { }, { accessToken, refreshToken: newRefToken },
+            {
+              httpOnly: true,
+              secure: true,
+            });
         } else {
           responseError(res, 'Authorized failed', 403, 'Wrong refreshToken', []);
         }
