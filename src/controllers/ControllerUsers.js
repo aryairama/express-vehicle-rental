@@ -8,7 +8,11 @@ import usersModel from '../models/users.js';
 import { redis } from '../configs/redis.js';
 import { genAccessToken, genRefreshToken, genVerifEmailToken } from '../helpers/jwt.js';
 import {
-  response, responseError, responsePagination, responseCookie, sendVerifEmailRegister,
+  response,
+  responseError,
+  responsePagination,
+  responseCookie,
+  sendVerifEmailRegister,
 } from '../helpers/helpers.js';
 
 const register = async (req, res, next) => {
@@ -230,6 +234,57 @@ const readUser = async (req, res, next) => {
   }
 };
 
+const checkTokenVerifEmail = (req, res, next) => {
+  try {
+    if (!req.cookies.tokenEmail) {
+      return responseError(res, 'Check Token failed', 403, 'Server need tokenverifemail', []);
+    }
+    Jwt.verify(req.cookies.tokenEmail, process.env.VERIF_EMAIL_TOKEN_SECRET, (error, decode) => {
+      if (error) {
+        if (error.name === 'TokenExpiredError') {
+          return responseError(res, 'Authorized failed', 401, 'token expired', []);
+        // eslint-disable-next-line no-else-return
+        } else if (error.name === 'JsonWebTokenError') {
+          return responseError(res, 'Authorized failed', 401, 'token invalid', []);
+        } else {
+          return responseError(res, 'Authorized failed', 401, 'token not active', []);
+        }
+      }
+      response(res, 'Token Valid', 200, 'Token verif email valid', decode);
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const verifEmail = async (req, res, next) => {
+  try {
+    Jwt.verify(req.cookies.tokenEmail, process.env.VERIF_EMAIL_TOKEN_SECRET, (err, decode) => {
+      if (err) {
+        return responseError(res, 'Verif failed', 403, 'Verif Register Email failed', []);
+      }
+      redis.get(`jwtEmailVerToken-${decode.user_id}`, async (error, result) => {
+        if (result !== null) {
+          const updateVerifEmail = await usersModel.updateUser({ verif_email: 1 }, decode.user_id);
+          if (updateVerifEmail.affectedRows) {
+            redis.del(`jwtEmailVerToken-${decode.user_id}`);
+            return response(res, 'success', 200, 'successfully verified email', []);
+          }
+        } else {
+          const checkVerifEmail = await usersModel.checkExistUser(decode.user_id, 'user_id');
+          if (checkVerifEmail[0].verif_email === 1) {
+            response(res, 'success', 201, 'Email is verified', []);
+          } else if (checkVerifEmail[0].verif_email === 0) {
+            responseError(res, 'Verif failed', 403, 'Verif Register Email failed', []);
+          }
+        }
+      });
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   register,
   login,
@@ -237,4 +292,6 @@ export default {
   refreshToken,
   updateUser,
   readUser,
+  checkTokenVerifEmail,
+  verifEmail,
 };
