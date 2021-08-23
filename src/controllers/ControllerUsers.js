@@ -6,9 +6,9 @@ import Jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import usersModel from '../models/users.js';
 import { redis } from '../configs/redis.js';
-import { genAccessToken, genRefreshToken } from '../helpers/jwt.js';
+import { genAccessToken, genRefreshToken, genVerifEmailToken } from '../helpers/jwt.js';
 import {
-  response, responseError, responsePagination, responseCookie,
+  response, responseError, responsePagination, responseCookie, sendVerifEmailRegister,
 } from '../helpers/helpers.js';
 
 const register = async (req, res, next) => {
@@ -24,6 +24,8 @@ const register = async (req, res, next) => {
     if (addDataUser.affectedRows) {
       delete data.password;
       response(res, 'success', 200, 'successfully added user data', data);
+      const token = await genVerifEmailToken({ ...data, user_id: addDataUser.insertId }, { expiresIn: 60 * 60 * 24 });
+      await sendVerifEmailRegister(token, data.email, data.name);
     }
   } catch (error) {
     next(error);

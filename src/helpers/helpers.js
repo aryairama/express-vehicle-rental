@@ -1,5 +1,7 @@
 import path from 'path';
 import checkFolder from 'fs';
+import mailer from '../configs/nodemailer.js';
+import templateVerifEmail from '../templates/verifEmail.js';
 
 const response = (res, status, statusCode, message, data) => {
   res.status(statusCode).json({
@@ -54,6 +56,32 @@ const createFolderImg = (direktori) => {
   }
 };
 
+const sendVerifEmailRegister = async (token, emailTo, name) => {
+  try {
+    await mailer.sendMail({
+      from: `"Ceo Vehicle Rental" <${process.env.NODEMAILER_AUTH_USER}>`,
+      to: emailTo,
+      subject: 'Verify Email Address',
+      attachments: [
+        {
+          filename: 'logo.png',
+          path: './src/assets/icon/logo.png',
+          cid: 'logo',
+        },
+      ],
+      html: templateVerifEmail(token, name),
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export {
-  response, responseError, promiseResolveReject, responsePagination, createFolderImg, responseCookie,
+  response,
+  responseError,
+  promiseResolveReject,
+  responsePagination,
+  createFolderImg,
+  responseCookie,
+  sendVerifEmailRegister,
 };
