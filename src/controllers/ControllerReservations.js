@@ -1,6 +1,6 @@
 import vehiclesModel from '../models/vehicles.js';
 import reservationsModel from '../models/reservations.js';
-import { response, responseError } from '../helpers/helpers.js';
+import { response, responseError, responsePagination } from '../helpers/helpers.js';
 
 const addReservation = async (req, res, next) => {
   try {
@@ -29,6 +29,88 @@ const addReservation = async (req, res, next) => {
   }
 };
 
+const history = async (req, res, next) => {
+  const search = req.query.search || '';
+  let order = req.query.order || '';
+  if (order.toUpperCase() === 'ASC') {
+    order = 'ASC';
+  } else if (order.toUpperCase() === 'DESC') {
+    order = 'DESC';
+  } else {
+    order = 'DESC';
+  }
+  let { fieldOrder } = req.query;
+  if (fieldOrder) {
+    if (fieldOrder.toLowerCase() === 'name') {
+      fieldOrder = 'vehicles.vehicles_name';
+    } else if (fieldOrder.toLowerCase() === 'type') {
+      fieldOrder = 'types.type_name';
+    } else {
+      fieldOrder = 'rental.rental_id';
+    }
+  } else {
+    fieldOrder = 'rental.rental_id';
+  }
+  try {
+    let dataUsers;
+    let pagination;
+    const lengthRecord = Object.keys(
+      await reservationsModel.readReservation(
+        search,
+        order,
+        fieldOrder,
+        '',
+        '',
+        req.userLogin.roles,
+        req.userLogin.user_id,
+      ),
+    ).length;
+    if (lengthRecord > 0) {
+      const limit = req.query.limit || 5;
+      const pages = Math.ceil(lengthRecord / limit);
+      let page = req.query.page || 1;
+      let nextPage = parseInt(page, 10) + 1;
+      let prevPage = parseInt(page, 10) - 1;
+      if (nextPage > pages) {
+        nextPage = pages;
+      }
+      if (prevPage < 1) {
+        prevPage = 1;
+      }
+      if (page > pages) {
+        page = pages;
+      } else if (page < 1) {
+        page = 1;
+      }
+      const start = (page - 1) * limit;
+      pagination = {
+        countData: lengthRecord,
+        pages,
+        limit: parseInt(limit, 10),
+        curentPage: parseInt(page, 10),
+        nextPage,
+        prevPage,
+      };
+      dataUsers = await reservationsModel.readReservation(
+        search,
+        order,
+        fieldOrder,
+        start,
+        limit,
+        req.userLogin.roles,
+        req.userLogin.user_id,
+      );
+      responsePagination(res, 'success', 200, 'data history', dataUsers, pagination);
+    } else {
+      dataUsers = await reservationsModel.readReservation(search, order, fieldOrder, '', '', '', '');
+      response(res, 'success', 200, 'data history', dataUsers);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   addReservation,
+  history,
 };
