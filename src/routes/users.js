@@ -7,6 +7,7 @@ const router = express.Router();
 
 router
   .get('/', Auth, Role('admin'), ValidationUsers('read'), ControllerUsers.readUser)
+  .get('/profile', Auth, Role('admin', 'user'), ControllerUsers.profile)
   .post('/register', ValidationUsers('register'), ControllerUsers.register)
   .post('/login', ValidationUsers('login'), ControllerUsers.login)
   .post('/refreshtoken', ControllerUsers.refreshToken)

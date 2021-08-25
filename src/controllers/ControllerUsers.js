@@ -285,6 +285,16 @@ const verifEmail = async (req, res, next) => {
   }
 };
 
+const profile = async (req, res, next) => {
+  try {
+    const getProfile = await usersModel.checkExistUser(req.userLogin.user_id, 'user_id');
+    delete getProfile[0].password;
+    response(res, 'Success', 200, 'User profile', getProfile[0]);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   register,
   login,
@@ -294,4 +304,5 @@ export default {
   readUser,
   checkTokenVerifEmail,
   verifEmail,
+  profile,
 };
