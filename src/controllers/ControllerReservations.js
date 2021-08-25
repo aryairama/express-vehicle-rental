@@ -42,9 +42,9 @@ const history = async (req, res, next) => {
   let { fieldOrder } = req.query;
   if (fieldOrder) {
     if (fieldOrder.toLowerCase() === 'name') {
-      fieldOrder = 'vehicles.vehicles_name';
+      fieldOrder = 'vehicles.vehicle_id';
     } else if (fieldOrder.toLowerCase() === 'type') {
-      fieldOrder = 'types.type_name';
+      fieldOrder = 'types.type_id';
     } else {
       fieldOrder = 'rental.rental_id';
     }
