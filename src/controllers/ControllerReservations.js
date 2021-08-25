@@ -102,7 +102,15 @@ const history = async (req, res, next) => {
       );
       responsePagination(res, 'success', 200, 'data history', dataUsers, pagination);
     } else {
-      dataUsers = await reservationsModel.readReservation(search, order, fieldOrder, '', '', '', '');
+      dataUsers = await reservationsModel.readReservation(
+        search,
+        order,
+        fieldOrder,
+        '',
+        '',
+        req.userLogin.roles,
+        req.userLogin.user_id,
+      );
       response(res, 'success', 200, 'data history', dataUsers);
     }
   } catch (error) {
