@@ -58,10 +58,13 @@ const detailRental = (id) => new Promise((resolve, reject) => {
     `SELECT rental.*,
   users.user_id,users.name,users.email,users.phone_number,
   vehicles.vehicles_name,vehicles.price AS vehicle_price,
-  extra_cost.cost AS extra_cost
+  (SELECT vehicle_image FROM vehicle_images WHERE vehicle_images.vehicle_id = vehicles.vehicle_id LIMIT 1) AS vehicle_image,
+  extra_cost.cost AS extra_cost,
+  locations.*
   FROM rental JOIN users ON users.user_id = rental.user_id
   JOIN vehicles ON vehicles.vehicle_id = rental.vehicle_id
   LEFT JOIN extra_cost on rental.rental_id = extra_cost.rental_id
+  JOIN locations ON locations.location_id = vehicles.location_id
   WHERE rental.rental_id = ?`,
     id,
     (error, result) => {
