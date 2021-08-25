@@ -1,4 +1,6 @@
-import { body, query, validationResult } from 'express-validator';
+import {
+  body, query, param, validationResult,
+} from 'express-validator';
 import { responseError } from '../helpers/helpers.js';
 
 const validateResult = (req, res, next) => {
@@ -89,12 +91,24 @@ const rulesRead = () => [
     .withMessage('fieldOrder must be more than 0'),
 ];
 
+const rulesUpdateAndDelete = () => [
+  param('id')
+    .isNumeric()
+    .withMessage('id must be number')
+    .bail()
+    .isInt({ min: 1 })
+    .withMessage('id must be more than 0'),
+];
+
 const validate = (method) => {
   if (method === 'create') {
     return [rulesCreadReserVation(), validateResult];
   }
   if (method === 'read') {
     return [rulesRead(), validateResult];
+  }
+  if (method === 'detail') {
+    return [rulesUpdateAndDelete(), validateResult];
   }
 };
 

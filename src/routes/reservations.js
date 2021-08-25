@@ -7,6 +7,7 @@ const router = express.Router();
 
 router
   .get('/', Auth, Role('user', 'admin'), ValidationReservations('read'), ControllerReservations.history)
-  .post('/', Auth, Role('user'), ValidationReservations('create'), ControllerReservations.addReservation);
+  .post('/', Auth, Role('user'), ValidationReservations('create'), ControllerReservations.addReservation)
+  .get('/:id', Auth, Role('user', 'admin'), ValidationReservations('detail'), ControllerReservations.detailReservation);
 
 export default router;

@@ -118,7 +118,21 @@ const history = async (req, res, next) => {
   }
 };
 
+const detailReservation = async (req, res, next) => {
+  try {
+    const detail = await reservationsModel.detailRental(req.params.id);
+    if (detail.length > 0) {
+      response(res, 'success', 200, 'Detail reservation', detail[0]);
+    } else {
+      responseError(res, 'failed', 404, 'data not found', []);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   addReservation,
   history,
+  detailReservation,
 };

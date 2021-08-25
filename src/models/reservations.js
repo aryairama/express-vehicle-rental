@@ -53,4 +53,21 @@ const readReservation = (search, order, fieldOrder, start = '', limit = '', role
   }
 });
 
-export default { insertReservation, readReservation };
+const detailRental = (id) => new Promise((resolve, reject) => {
+  connection.query(
+    `SELECT rental.*,
+  users.user_id,users.name,users.email,users.phone_number,
+  vehicles.vehicles_name,vehicles.price AS vehicle_price,
+  extra_cost.cost AS extra_cost
+  FROM rental JOIN users ON users.user_id = rental.user_id
+  JOIN vehicles ON vehicles.vehicle_id = rental.vehicle_id
+  LEFT JOIN extra_cost on rental.rental_id = extra_cost.rental_id
+  WHERE rental.rental_id = ?`,
+    id,
+    (error, result) => {
+      promiseResolveReject(resolve, reject, error, result);
+    },
+  );
+});
+
+export default { insertReservation, readReservation, detailRental };
