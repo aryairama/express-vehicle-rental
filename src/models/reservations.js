@@ -53,7 +53,11 @@ const readReservation = (search, order, fieldOrder, start = '', limit = '', role
   }
 });
 
-const detailRental = (id) => new Promise((resolve, reject) => {
+const detailRental = (id, userId, roles) => new Promise((resolve, reject) => {
+  let extraQuery = '';
+  if (roles === 'user') {
+    extraQuery = `AND rental.user_id = ${userId}`;
+  }
   connection.query(
     `SELECT rental.*,
   users.user_id,users.name,users.email,users.phone_number,
@@ -65,7 +69,7 @@ const detailRental = (id) => new Promise((resolve, reject) => {
   JOIN vehicles ON vehicles.vehicle_id = rental.vehicle_id
   LEFT JOIN extra_cost on rental.rental_id = extra_cost.rental_id
   JOIN locations ON locations.location_id = vehicles.location_id
-  WHERE rental.rental_id = ?`,
+  WHERE rental.rental_id = ? ${extraQuery}`,
     id,
     (error, result) => {
       promiseResolveReject(resolve, reject, error, result);
