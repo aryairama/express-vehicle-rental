@@ -169,6 +169,7 @@ const deleteVehicle = async (req, res, next) => {
 };
 
 const readVehicle = async (req, res, next) => {
+  const StatusPagination = req.query.pagination || 'on';
   const locationName = req.query.location_name || '';
   const typeName = req.query.type_name || '';
   const search = req.query.search || '';
@@ -222,8 +223,12 @@ const readVehicle = async (req, res, next) => {
         nextPage,
         prevPage,
       };
-      dataUsers = await vehiclesModel.readVehicle(search, order, fieldOrder, start, limit, locationName, typeName);
-      responsePagination(res, 'success', 200, 'data types', dataUsers, pagination);
+      if (StatusPagination === 'on') {
+        dataUsers = await vehiclesModel.readVehicle(search, order, fieldOrder, start, limit, locationName, typeName);
+        return responsePagination(res, 'success', 200, 'data types', dataUsers, pagination);
+      }
+      dataUsers = await vehiclesModel.readVehicle(search, order, fieldOrder, '', '', locationName, typeName);
+      response(res, 'success', 200, 'data types', dataUsers);
     } else {
       dataUsers = await vehiclesModel.readVehicle(search, order, fieldOrder, '', '', locationName, typeName);
       response(res, 'success', 200, 'data types', dataUsers);
