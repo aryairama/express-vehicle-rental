@@ -100,6 +100,15 @@ const rulesUpdateAndDelete = () => [
     .withMessage('id must be more than 0'),
 ];
 
+const rulesUpdate = () => [
+  body('status')
+    .notEmpty()
+    .withMessage('status is required')
+    .bail()
+    .isIn(['pending', 'returned', 'canceled', 'approved'])
+    .withMessage('the value of the status must be approved,canceled,returned,pending'),
+];
+
 const validate = (method) => {
   if (method === 'create') {
     return [rulesCreadReserVation(), validateResult];
@@ -109,6 +118,9 @@ const validate = (method) => {
   }
   if (method === 'detail') {
     return [rulesUpdateAndDelete(), validateResult];
+  }
+  if (method === 'update') {
+    return [rulesUpdateAndDelete(), rulesUpdate(), validateResult];
   }
 };
 

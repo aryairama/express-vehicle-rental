@@ -73,4 +73,22 @@ const detailRental = (id) => new Promise((resolve, reject) => {
   );
 });
 
-export default { insertReservation, readReservation, detailRental };
+const checkExisReservation = (fieldValue, field) => new Promise((resolve, reject) => {
+  connection.query(`SELECT * FROM rental where ${field} = ?`, fieldValue, (error, result) => {
+    promiseResolveReject(resolve, reject, error, result);
+  });
+});
+
+const updateReservation = (data, id) => new Promise((resolve, reject) => {
+  connection.query('UPDATE rental set ? where rental_id  = ? ', [data, id], (error, result) => {
+    promiseResolveReject(resolve, reject, error, result);
+  });
+});
+
+export default {
+  insertReservation,
+  readReservation,
+  detailRental,
+  checkExisReservation,
+  updateReservation,
+};

@@ -131,8 +131,28 @@ const detailReservation = async (req, res, next) => {
   }
 };
 
+const updateReservation = async (req, res, next) => {
+  try {
+    const checkExisReservation = await reservationsModel.checkExisReservation(req.params.id, 'rental_id');
+    if (checkExisReservation.length > 0) {
+      const dataUpdateReservation = await reservationsModel.updateReservation(
+        { status: req.body.status },
+        req.params.id,
+      );
+      if (dataUpdateReservation.affectedRows) {
+        response(res, 'success', 200, 'successfully update reservation data', { status: req.body.status });
+      }
+    } else {
+      responseError(res, 'failed', 404, 'data not found', []);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   addReservation,
   history,
   detailReservation,
+  updateReservation,
 };
