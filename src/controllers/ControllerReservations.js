@@ -135,10 +135,13 @@ const updateReservation = async (req, res, next) => {
   try {
     const checkExisReservation = await reservationsModel.checkExisReservation(req.params.id, 'rental_id');
     if (checkExisReservation.length > 0) {
-      const dataUpdateReservation = await reservationsModel.updateReservation(
-        { status: req.body.status },
-        req.params.id,
-      );
+      let data = {
+        status: req.body.status,
+      };
+      if (req.body.status === 'returned') {
+        data = { ...data, return_date: new Date().toISOString().slice(0, 10) };
+      }
+      const dataUpdateReservation = await reservationsModel.updateReservation(data, req.params.id);
       if (dataUpdateReservation.affectedRows) {
         response(res, 'success', 200, 'successfully update reservation data', { status: req.body.status });
       }
