@@ -13,7 +13,7 @@ const ReservationsRouter = require('./src/routes/reservations');
 const { responseError } = require('./src/helpers/helpers');
 
 const app = express();
-const port = process.env.PORT_APPLICATION;
+const port = process.env.PORT;
 app.use('/public', express.static(path.resolve('./public')));
 app.use(fileUpload());
 app.use(
