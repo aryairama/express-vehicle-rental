@@ -50,11 +50,19 @@ const login = async (req, res, next) => {
         delete checkExistUser[0].password;
         const accessToken = await genAccessToken({ ...checkExistUser[0] }, { expiresIn: 60 * 60 * 2 });
         const refreshToken = await genRefreshToken({ ...checkExistUser[0] }, { expiresIn: 60 * 60 * 4 });
-        responseCookie(res, 'Success', 200, 'Login success', { ...checkExistUser[0] }, { accessToken, refreshToken },
+        responseCookie(
+          res,
+          'Success',
+          200,
+          'Login success',
+          { ...checkExistUser[0] },
+          { accessToken, refreshToken },
           {
             httpOnly: true,
             secure: true,
-          });
+            sameSite: 'none',
+          },
+        );
       } else {
         responseError(res, 'Authorized failed', 401, 'Wrong password', {
           password: 'passwords dont match',
@@ -77,7 +85,11 @@ const logout = (req, res, next) => {
       if (error) {
         next(error);
       } else {
-        res.clearCookie('authVehicleRental');
+        res.clearCookie('authVehicleRental', {
+          httpOnly: true,
+          secure: true,
+          sameSite: 'none',
+        });
         response(res, 'Logout', 200, 'Logout success', []);
       }
     });
@@ -110,11 +122,19 @@ const refreshToken = async (req, res, next) => {
           redis.del(`jwtRefToken-${decode.user_id}`);
           const accessToken = await genAccessToken(decode, { expiresIn: 60 * 60 * 2 });
           const newRefToken = await genRefreshToken(decode, { expiresIn: 60 * 60 * 4 });
-          responseCookie(res, 'Success', 200, 'AccessToken', { }, { accessToken, refreshToken: newRefToken },
+          responseCookie(
+            res,
+            'Success',
+            200,
+            'AccessToken',
+            {},
+            { accessToken, refreshToken: newRefToken },
             {
               httpOnly: true,
               secure: true,
-            });
+              sameSite: 'none',
+            },
+          );
         } else {
           responseError(res, 'Authorized failed', 403, 'Wrong refreshToken', []);
         }
