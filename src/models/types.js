@@ -1,5 +1,5 @@
-import connection from '../configs/db.js';
-import { promiseResolveReject } from '../helpers/helpers.js';
+const connection = require('../configs/db');
+const { promiseResolveReject } = require('../helpers/helpers');
 
 const checkExistType = (fieldValue, field) => new Promise((resolve, reject) => {
   connection.query(`SELECT * FROM types where ${field} = ?`, fieldValue, (error, result) => {
@@ -54,7 +54,7 @@ const deleteType = (id) => new Promise((resolve, reject) => {
   });
 });
 
-export default {
+module.exports = {
   checkExistType,
   insertType,
   updateType,

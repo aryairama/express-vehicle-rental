@@ -1,7 +1,7 @@
-import express from 'express';
-import ControllerVehicles from '../controllers/ControllerVehicles.js';
-import ValidationVehicles from '../validations/ValidationVehicles.js';
-import { Auth, Role } from '../middlewares/Auth.js';
+const express = require('express');
+const ControllerVehicles = require('../controllers/ControllerVehicles');
+const ValidationVehicles = require('../validations/ValidationVehicles');
+const { Auth, Role } = require('../middlewares/Auth');
 
 const router = express.Router();
 
@@ -12,4 +12,4 @@ router
   .put('/:id', Auth, Role('admin'), ValidationVehicles('update'), ControllerVehicles.updateVehicle)
   .delete('/:id', Auth, Role('admin'), ValidationVehicles('delete'), ControllerVehicles.deleteVehicle)
   .get('/type/:id', ValidationVehicles('read'), ControllerVehicles.readVehicleByType);
-export default router;
+module.exports = router;

@@ -1,19 +1,19 @@
-import bcrypt from 'bcrypt';
-import path from 'path';
-import fs from 'fs/promises';
-import checkFolder from 'fs';
-import Jwt from 'jsonwebtoken';
-import { v4 as uuidv4 } from 'uuid';
-import usersModel from '../models/users.js';
-import { redis } from '../configs/redis.js';
-import { genAccessToken, genRefreshToken, genVerifEmailToken } from '../helpers/jwt.js';
-import {
+const bcrypt = require('bcrypt');
+const path = require('path');
+const fs = require('fs/promises');
+const checkFolder = require('fs');
+const Jwt = require('jsonwebtoken');
+const { v4: uuidv4 } = require('uuid');
+const usersModel = require('../models/users');
+const { redis } = require('../configs/redis');
+const { genAccessToken, genRefreshToken, genVerifEmailToken } = require('../helpers/jwt');
+const {
   response,
   responseError,
   responsePagination,
   responseCookie,
   sendVerifEmailRegister,
-} from '../helpers/helpers.js';
+} = require('../helpers/helpers');
 
 const register = async (req, res, next) => {
   try {
@@ -42,7 +42,8 @@ const login = async (req, res, next) => {
     if (checkExistUser.length > 0) {
       if (checkExistUser[0].verif_email === 0) {
         return responseError(res, 'Email not verified', 403, 'Email has not been verified', {});
-      } if (checkExistUser[0].account_status !== 'active') {
+      }
+      if (checkExistUser[0].account_status !== 'active') {
         return responseError(res, 'Account not Found', 404, 'Your account not found in database', {});
       }
       const comparePassword = await bcrypt.compare(req.body.password, checkExistUser[0].password);
@@ -263,7 +264,7 @@ const checkTokenVerifEmail = (req, res, next) => {
       if (error) {
         if (error.name === 'TokenExpiredError') {
           return responseError(res, 'Authorized failed', 401, 'token expired', []);
-        // eslint-disable-next-line no-else-return
+          // eslint-disable-next-line no-else-return
         } else if (error.name === 'JsonWebTokenError') {
           return responseError(res, 'Authorized failed', 401, 'token invalid', []);
         } else {
@@ -315,7 +316,7 @@ const profile = async (req, res, next) => {
   }
 };
 
-export default {
+module.exports = {
   register,
   login,
   logout,

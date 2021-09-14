@@ -1,7 +1,7 @@
-import express from 'express';
-import ControllerLocations from '../controllers/ControllerLocations.js';
-import ValidationLocations from '../validations/ValidationLocations.js';
-import { Auth, Role } from '../middlewares/Auth.js';
+const express = require('express');
+const ControllerLocations = require('../controllers/ControllerLocations');
+const ValidationLocations = require('../validations/ValidationLocations');
+const { Auth, Role } = require('../middlewares/Auth');
 
 const router = express.Router();
 
@@ -11,4 +11,4 @@ router
   .put('/:id', Auth, Role('admin'), ValidationLocations('update'), ControllerLocations.updateLocation)
   .delete('/:id', Auth, Role('admin'), ValidationLocations('delete'), ControllerLocations.deleteLocation);
 
-export default router;
+module.exports = router;

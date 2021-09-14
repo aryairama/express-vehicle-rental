@@ -1,7 +1,7 @@
-import express from 'express';
-import ControllerUsers from '../controllers/ControllerUsers.js';
-import ValidationUsers from '../validations/ValidationUsers.js';
-import { Auth, Role } from '../middlewares/Auth.js';
+const express = require('express');
+const ControllerUsers = require('../controllers/ControllerUsers');
+const ValidationUsers = require('../validations/ValidationUsers');
+const { Auth, Role } = require('../middlewares/Auth');
 
 const router = express.Router();
 
@@ -16,4 +16,4 @@ router
   .delete('/logout', Auth, Role('user', 'admin'), ControllerUsers.logout)
   .post('/:id', Auth, Role('user', 'admin'), ValidationUsers('update'), ControllerUsers.updateUser);
 
-export default router;
+module.exports = router;

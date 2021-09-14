@@ -1,5 +1,5 @@
-import connection from '../configs/db.js';
-import { promiseResolveReject } from '../helpers/helpers.js';
+const connection = require('../configs/db');
+const { promiseResolveReject } = require('../helpers/helpers');
 
 const checkExistLocation = (fieldValue, field) => new Promise((resolve, reject) => {
   connection.query(`SELECT * FROM locations where ${field} = ?`, fieldValue, (error, result) => {
@@ -54,7 +54,7 @@ const deleteLocation = (id) => new Promise((resolve, reject) => {
   });
 });
 
-export default {
+module.exports = {
   checkExistLocation,
   insertLocation,
   updateLocation,

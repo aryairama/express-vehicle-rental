@@ -1,5 +1,5 @@
-import connection from '../configs/db.js';
-import { promiseResolveReject } from '../helpers/helpers.js';
+const connection = require('../configs/db');
+const { promiseResolveReject } = require('../helpers/helpers');
 
 const insertVehicle = (data) => new Promise((resolve, reject) => {
   connection.query('INSERT INTO vehicles set ?', data, (error, result) => {
@@ -65,7 +65,9 @@ const readVehicle = (search, order, fieldOrder, start = '', limit = '', location
 const detailVehicle = (id) => new Promise((resolve, reject) => {
   connection.query(
     `SELECT locations.*,types.*,vehicles.* FROM vehicles INNER JOIN locations ON locations.location_id = vehicles.location_id
-    INNER JOIN types ON types.type_id = vehicles.type_id WHERE vehicles.vehicle_id = ?`, id, (error, result) => {
+    INNER JOIN types ON types.type_id = vehicles.type_id WHERE vehicles.vehicle_id = ?`,
+    id,
+    (error, result) => {
       promiseResolveReject(resolve, reject, error, result);
     },
   );
@@ -97,7 +99,7 @@ const readVehicleByType = (search, order, fieldOrder, start = '', limit = '', lo
   }
 });
 
-export default {
+module.exports = {
   insertVehicle,
   checkExistVehicle,
   updateVehicle,

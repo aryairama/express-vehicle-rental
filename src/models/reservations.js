@@ -1,5 +1,5 @@
-import connection from '../configs/db.js';
-import { promiseResolveReject } from '../helpers/helpers.js';
+const connection = require('../configs/db');
+const { promiseResolveReject } = require('../helpers/helpers');
 
 const insertReservation = (data) => new Promise((resolve, reject) => {
   connection.query('INSERT INTO rental set ?', data, (error, result) => {
@@ -89,7 +89,7 @@ const updateReservation = (data, id) => new Promise((resolve, reject) => {
   });
 });
 
-export default {
+module.exports = {
   insertReservation,
   readReservation,
   detailRental,

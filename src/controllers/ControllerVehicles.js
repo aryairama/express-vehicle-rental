@@ -1,13 +1,13 @@
-import path from 'path';
-import fs from 'fs/promises';
-import { v4 as uuidv4 } from 'uuid';
-import locationsModel from '../models/locations.js';
-import typesModel from '../models/types.js';
-import vehiclesModel from '../models/vehicles.js';
-import vehicleImagesModel from '../models/vehicle_images.js';
-import {
+const path = require('path');
+const fs = require('fs/promises');
+const { v4: uuidv4 } = require('uuid');
+const locationsModel = require('../models/locations');
+const typesModel = require('../models/types');
+const vehiclesModel = require('../models/vehicles');
+const vehicleImagesModel = require('../models/vehicle_images');
+const {
   responseError, response, createFolderImg, responsePagination,
-} from '../helpers/helpers.js';
+} = require('../helpers/helpers');
 
 const createVehicle = async (req, res, next) => {
   try {
@@ -340,7 +340,7 @@ const readVehicleByType = async (req, res, next) => {
   }
 };
 
-export default {
+module.exports = {
   createVehicle,
   updateVehicle,
   deleteVehicle,

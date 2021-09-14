@@ -1,5 +1,5 @@
-import locationsModel from '../models/locations.js';
-import { response, responsePagination } from '../helpers/helpers.js';
+const locationsModel = require('../models/locations');
+const { response, responsePagination } = require('../helpers/helpers');
 
 const createLocation = async (req, res, next) => {
   try {
@@ -121,7 +121,7 @@ const deleteLocation = async (req, res, next) => {
   }
 };
 
-export default {
+module.exports = {
   createLocation,
   updateLocation,
   readLocation,

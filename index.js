@@ -1,16 +1,16 @@
 /* eslint-disable no-unused-vars */
-import express from 'express';
-import path from 'path';
-import 'dotenv/config';
-import cors from 'cors';
-import fileUpload from 'express-fileupload';
-import cookieParser from 'cookie-parser';
-import usersRouter from './src/routes/users.js';
-import locationsRouter from './src/routes/location.js';
-import typesRouter from './src/routes/types.js';
-import vehiclesRouter from './src/routes/vehicles.js';
-import ReservationsRouter from './src/routes/reservations.js';
-import { responseError } from './src/helpers/helpers.js';
+const express = require('express');
+const path = require('path');
+require('dotenv').config();
+const cors = require('cors');
+const fileUpload = require('express-fileupload');
+const cookieParser = require('cookie-parser');
+const usersRouter = require('./src/routes/users');
+const locationsRouter = require('./src/routes/location');
+const typesRouter = require('./src/routes/types');
+const vehiclesRouter = require('./src/routes/vehicles');
+const ReservationsRouter = require('./src/routes/reservations');
+const { responseError } = require('./src/helpers/helpers');
 
 const app = express();
 const port = process.env.PORT_APPLICATION;

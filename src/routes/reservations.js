@@ -1,7 +1,7 @@
-import express from 'express';
-import ControllerReservations from '../controllers/ControllerReservations.js';
-import ValidationReservations from '../validations/ValidationReservations.js';
-import { Auth, Role } from '../middlewares/Auth.js';
+const express = require('express');
+const ControllerReservations = require('../controllers/ControllerReservations');
+const ValidationReservations = require('../validations/ValidationReservations');
+const { Auth, Role } = require('../middlewares/Auth');
 
 const router = express.Router();
 
@@ -11,4 +11,4 @@ router
   .patch('/:id', Auth, Role('user', 'admin'), ValidationReservations('update'), ControllerReservations.updateReservation)
   .get('/:id', Auth, Role('user', 'admin'), ValidationReservations('detail'), ControllerReservations.detailReservation);
 
-export default router;
+module.exports = router;

@@ -1,6 +1,6 @@
-import vehiclesModel from '../models/vehicles.js';
-import reservationsModel from '../models/reservations.js';
-import { response, responseError, responsePagination } from '../helpers/helpers.js';
+const vehiclesModel = require('../models/vehicles');
+const reservationsModel = require('../models/reservations');
+const { response, responseError, responsePagination } = require('../helpers/helpers');
 
 const addReservation = async (req, res, next) => {
   try {
@@ -153,7 +153,7 @@ const updateReservation = async (req, res, next) => {
   }
 };
 
-export default {
+module.exports = {
   addReservation,
   history,
   detailReservation,

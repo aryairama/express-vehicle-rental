@@ -1,5 +1,5 @@
-import typesModel from '../models/types.js';
-import { response, responsePagination } from '../helpers/helpers.js';
+const typesModel = require('../models/types');
+const { response, responsePagination } = require('../helpers/helpers');
 
 const createType = async (req, res, next) => {
   try {
@@ -130,7 +130,7 @@ const detailType = async (req, res, next) => {
   }
 };
 
-export default {
+module.exports = {
   createType,
   updateType,
   readType,

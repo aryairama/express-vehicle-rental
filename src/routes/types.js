@@ -1,7 +1,7 @@
-import express from 'express';
-import ControllerTypes from '../controllers/ControllerTypes.js';
-import ValidationTypes from '../validations/ValidationTypes.js';
-import { Auth, Role } from '../middlewares/Auth.js';
+const express = require('express');
+const ControllerTypes = require('../controllers/ControllerTypes');
+const ValidationTypes = require('../validations/ValidationTypes');
+const { Auth, Role } = require('../middlewares/Auth');
 
 const router = express.Router();
 
@@ -12,4 +12,4 @@ router
   .get('/:id', ValidationTypes('delete'), ControllerTypes.detailType)
   .delete('/:id', Auth, Role('admin'), ValidationTypes('delete'), ControllerTypes.deleteType);
 
-export default router;
+module.exports = router;

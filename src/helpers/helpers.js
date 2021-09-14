@@ -1,7 +1,7 @@
-import path from 'path';
-import checkFolder from 'fs';
-import mailer from '../configs/nodemailer.js';
-import templateVerifEmail from '../templates/verifEmail.js';
+const path = require('path');
+const checkFolder = require('fs');
+const mailer = require('../configs/nodemailer');
+const templateVerifEmail = require('../templates/verifEmail');
 
 const response = (res, status, statusCode, message, data) => {
   res.status(statusCode).json({
@@ -76,7 +76,7 @@ const sendVerifEmailRegister = async (token, emailTo, name) => {
   }
 };
 
-export {
+module.exports = {
   response,
   responseError,
   promiseResolveReject,
