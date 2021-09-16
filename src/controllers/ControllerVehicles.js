@@ -185,6 +185,8 @@ const readVehicle = async (req, res, next) => {
   if (fieldOrder) {
     if (fieldOrder.toLowerCase() === 'vehicles_name') {
       fieldOrder = 'vehicles_name';
+    } else if (fieldOrder.toLowerCase() === 'count_rental') {
+      fieldOrder = 'count_rental';
     } else {
       fieldOrder = 'vehicle_id';
     }
