@@ -108,6 +108,11 @@ const refreshToken = async (req, res, next) => {
     Jwt.verify(token.refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decode) => {
       if (err) {
         if (err.name === 'TokenExpiredError') {
+          res.clearCookie('authVehicleRental', {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+          });
           responseError(res, 'Authorized failed', 401, 'token expired', []);
         } else if (err.name === 'JsonWebTokenError') {
           responseError(res, 'Authorized failed', 401, 'token invalid', []);
