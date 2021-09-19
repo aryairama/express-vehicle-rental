@@ -124,7 +124,7 @@ CREDENTIALS = [TRUE/FALSE]
 
 ## Rest Api
 
-You can view my Postman collection [here](https://www.postman.com/workspace/Vehicle-Rental~cf8567ad-c910-46f9-80ee-58f2ac916966/collection/10655215-316adfc1-1426-45b9-8135-364ec91cf1ea)
+You can view my Postman collection [here](https://www.postman.com/crimson-meadow-842892/workspace/Vehicle-Rental~cf8567ad-c910-46f9-80ee-58f2ac916966/collection/10655215-316adfc1-1426-45b9-8135-364ec91cf1ea)
 </br>
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/10655215-316adfc1-1426-45b9-8135-364ec91cf1ea?action=collection%2Ffork&collection-url=entityId%3D10655215-316adfc1-1426-45b9-8135-364ec91cf1ea%26entityType%3Dcollection%26workspaceId%3Dcf8567ad-c910-46f9-80ee-58f2ac916966)
 
