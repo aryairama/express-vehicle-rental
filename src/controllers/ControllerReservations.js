@@ -120,7 +120,7 @@ const history = async (req, res, next) => {
 
 const detailReservation = async (req, res, next) => {
   try {
-    const detail = await reservationsModel.detailRental(req.params.id, req.userLogin.user_id, req.userLogin.roles);
+    const detail = await reservationsModel.detailRental(req.params.id, 11, req.userLogin.roles);
     if (detail.length > 0) {
       response(res, 'success', 200, 'Detail reservation', detail[0]);
     } else {
