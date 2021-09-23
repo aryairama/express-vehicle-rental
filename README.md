@@ -60,7 +60,7 @@ This is an example of how to list things you need to use the software and how to
 ### Requirements
 * [Node.js](https://nodejs.org/en/)
 * [Postman](https://www.getpostman.com/) for testing
-* [Database](database-example.sql)
+* [Database](https://drive.google.com/drive/folders/1rqAcpEuxko9p-SaAcFL_ULFMRpp0LPOp?usp=sharing)
 
 ### Installation
 
@@ -76,13 +76,11 @@ cd express-vehicle-rental
 ```
 npm install
 ```
-- Development mode
+- Make a new database and import [rental.sql](https://drive.google.com/drive/folders/1rqAcpEuxko9p-SaAcFL_ULFMRpp0LPOp?usp=sharing)
+- <a href="#setup-env-example">Setup .env</a>
+- Starting application
 ```
 npm run serve
-```
-- Deploy mode
-```
-npm start
 ```
 
 ### Setup .env example
